@@ -1,0 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+@import "tailwindcss";
+
+*{
+   font-family: "Outfit", sans-serif;
+}
+
+/* Custom properties for theme colors to maintain consistency in the color scheme. */
+@theme{
+  --color-primary: #5F6FFF;
+}
+::-webkit-scrollbar{
+  @apply hidden
+}
+.reset-tw, .reset-tw *{
+  all: revert!important;
+}
+.cl-drawerRoot{
+  z-index: 10;
+}
