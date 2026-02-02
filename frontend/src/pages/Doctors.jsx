@@ -37,7 +37,7 @@ const Doctors = () => {
 
   return (
     <>
-      <p>
+      <p className='text-3xl font-medium flex justify-center py-5'>
         Browse through the doctors specialist
       </p>
       <div className='flex flex-col md:flex-row items-start mt-5 gap-5 '>

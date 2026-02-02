@@ -33,9 +33,6 @@ const SpecialityMenu = () => {
 
      </div>
 
-    
-    
-    
   )
 }
 
