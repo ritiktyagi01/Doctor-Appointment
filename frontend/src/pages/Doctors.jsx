@@ -45,10 +45,10 @@ const Doctors = () => {
         <div className='text-gray-500'>
           <div className="gap-4 cursor-pointer">
             <button
-              onClick={() => handleNavigate("General physician")}
-              className={`border flex justify-center items-center w-full h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md cursor-pointer text-gray-600 font-semibold transition-all duration-200 mb-3
+              onClick={() => handleNavigate("General-physician")}
+              className={`w-full border flex justify-center items-center  h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md cursor-pointer text-gray-600 font-semibold transition-all duration-200 mb-3
       ${slugify("General physician") === speciality
-                  ? "bg-primary text-white border-primary"
+                  ? "bg-primary text-white border-primary "
                   : " border-gray-300 "}
     `}
             >
