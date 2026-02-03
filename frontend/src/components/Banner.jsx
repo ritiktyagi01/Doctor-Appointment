@@ -11,7 +11,7 @@ const Banner = () => {
     <div>
       <div className='flex flex-col flex-wrap md:flex-row bg-primary  md:pt-15 px-6 md:px-10 lg:px-20 rounded-lg'>
         {/*-----LEft side------------ */}
-        <div className='md:w-1/2 flex flex-col items-start  justify-center gap-4 py-10 m-auto md:py-[10vh] md:-mb-[-7.5] '>
+        <div className='md:w-1/2 flex flex-col items-start  justify-center gap-4  py-0 m-auto md:py-6 md:-mb-[-7.5] '>
           <p className='text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight md:leading-tight lg:leading-tight'>Book Appointment
             <br />  With 100+ Trusted Doctors</p>
           {
@@ -29,7 +29,7 @@ const Banner = () => {
           }
         </div>
 
-        <div className='md:w-1/2 flex justify-end'>
+        <div className='md:w-1/2 flex justify-end '>
           <img
             className='w-full max-w-105 rounded-lg'
             src={assets.appointment_img}

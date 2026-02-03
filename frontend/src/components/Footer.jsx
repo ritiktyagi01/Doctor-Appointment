@@ -20,7 +20,7 @@ const Footer = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-14">
                     <div className="sm:col-span-2 lg:col-span-1">
                         <img className="h-auto w-auto rounded-full" src={assets.logo} alt="" />
-                        <p className="text-sm/7 mt-6">
+                        <p className="text-sm/7 mt-6 text-justify">
                             Our platform makes it easy to find trusted doctors, book appointments online,
                             and manage your healthcare needs in one place. With verified specialists,
                             flexible scheduling, and secure access to medical services, we help you save
@@ -31,10 +31,10 @@ const Footer = () => {
                     <div className="flex flex-col lg:items-center lg:justify-center">
                         <div className="flex flex-col text-sm space-y-2.5">
                             <h2 className="font-semibold mb-5 text-gray-800">Company</h2>
-                            <a className="hover:text-slate-600 transition" href="#">About us</a>
-                            <a className="hover:text-slate-600 transition" href="#">Careers</a>
-                            <a className="hover:text-slate-600 transition" href="#">Contact us</a>
-                            <a className="hover:text-slate-600 transition" href="#">Privacy policy</a>
+                            <a onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-slate-600 transition" href="/about">About us</a>
+                            <a onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-slate-600 transition" href="#">Careers</a>
+                            <a onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-slate-600 transition" href="/contact">Contact us</a>
+                            <a onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="hover:text-slate-600 transition" href="#">Privacy policy</a>
                         </div>
                     </div>
                     <div>
