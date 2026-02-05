@@ -43,7 +43,7 @@ const Doctors = () => {
       <div className='flex flex-col md:flex-row items-start mt-5 gap-5 '>
         {/* left side */}
         <div className='text-gray-500'>
-          <div className="gap-4 cursor-pointer">
+          <div className=" cursor-pointer flex  sm:flex-row md:flex-col md:items-start  gap-6 ">
             <button
               onClick={() => handleNavigate("General-physician")}
               className={`w-full border flex justify-center items-center  h-10 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded-md cursor-pointer text-gray-600 font-semibold transition-all duration-200 mb-3

@@ -3,6 +3,7 @@ import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import { ArrowRight } from 'lucide-react'
+import { useClerk, useUser } from "@clerk/clerk-react";
 
 const Appointment = () => {
   const { name } = useParams();
@@ -10,6 +11,8 @@ const Appointment = () => {
   const [docInfo, setDocinfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
+    const { user } = useUser();
+  const { openSignIn } = useClerk();
 
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const timeSlots = [
@@ -196,11 +199,18 @@ const Appointment = () => {
 
 
         {/* Book Button */}
-        <button onClick={() => Navigate('/my-appointments')}
+        {
+          user? (<button onClick={() => Navigate('/my-appointments')}
           className="mt-6 bg-primary w-fit text-white px-8 py-3 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer  focus:outline-none focus:ring-2 focus:ring-blue-500 "
         >
           Book an appointment  <ArrowRight className='inline ' />
-        </button>
+        </button>):(<button onClick={() => {openSignIn();}}
+          className="mt-6 bg-primary w-fit text-white px-8 py-3 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer  focus:outline-none focus:ring-2 focus:ring-blue-500 "
+        >
+          Book an appointment  <ArrowRight className='inline ' />
+        </button>)
+        }
+        
 
       </div>
 
