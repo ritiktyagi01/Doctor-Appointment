@@ -204,7 +204,7 @@ const Appointment = () => {
           className="mt-6 bg-primary w-fit text-white px-8 py-3 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer  focus:outline-none focus:ring-2 focus:ring-blue-500 "
         >
           Book an appointment  <ArrowRight className='inline ' />
-        </button>):(<button onClick={() => {openSignIn();}}
+        </button>):(<button onClick={() => {openSignIn()}}
           className="mt-6 bg-primary w-fit text-white px-8 py-3 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer  focus:outline-none focus:ring-2 focus:ring-blue-500 "
         >
           Book an appointment  <ArrowRight className='inline ' />
