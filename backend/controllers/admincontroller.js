@@ -1,15 +1,24 @@
 import validator from "validator";
 import bcrypt from "bcrypt";
 import doctorModel from "../models/doctorSchema.js";
-import {v2 as cloudinary} from 'cloudinary';
-import jwt from 'jsonwebtoken';
+import { v2 as cloudinary } from "cloudinary";
+import jwt from "jsonwebtoken";
 
 // add doctor
 
 const addDoctor = async (req, res) => {
   try {
-    const { name, email, password, speciality, degree, address, fees } =
-      req.body;
+    //destructure doctor data from request body
+    const { name, email, password, speciality, degree, address, fees } =req.body;
+      
+      
+    // 🔴 Image check FIRST
+    if (!req.file) {
+      return res.json({
+        success: false,
+        message: "Doctor image is required",
+      });
+    }
     const imagePath = req.file.path;
 
     //validations
@@ -44,10 +53,10 @@ const addDoctor = async (req, res) => {
 
     //save the image in cloudinary and get the url of the image
 
-   const result = await cloudinary.uploader.upload(imagePath, {
-    resource_type: "image",
-  folder: "prescripto",
-});
+    const result = await cloudinary.uploader.upload(imagePath, {
+      resource_type: "image",
+      folder: "prescripto",
+    });
 
     const imageUrl = result.secure_url;
 
@@ -64,10 +73,13 @@ const addDoctor = async (req, res) => {
       date: new Date(),
     };
 
+
     const doctor = new doctorModel(doctorData);
     await doctor.save();
-    res.json({success:true},{ message: "doctor added successfully" });
-  } catch (error) {
+    res.json({ success: true , message: "doctor added successfully" });
+  }
+   catch (error) {
+    console.error("Error in addDoctor:", error);
     res.json({
       success: false,
       message: "error on adding doctor",
@@ -76,30 +88,35 @@ const addDoctor = async (req, res) => {
   }
 };
 
-const adminLogin = async (req,res)=>{
+const adminLogin = async (req, res) => {
   try {
-      const { email, password } = req.body;
-  
+    console.log("Admin login attempt with data:", req.body);
+    const { email, password } = req.body;
 
-    if(!email || !password){
-        return res.json({success:false, message:"All fields are required"});
+    if (!email || !password) {
+      return res.json({ success: false, message: "All fields are required" });
     }
-    if(email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD){
-        const token = jwt.sign({ email, password }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        res.json({success:true,message:"admin login successful", token});
-    }
-    else{   
-        res.json({success:false, message:"invalid credentials"})
+    if ( email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD ) {
+      const token = jwt.sign(
+        {
+          email: process.env.ADMIN_EMAIL,
+          role: "admin",
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" },
+      );
+
+      res.json({ success: true, message: "admin login successful", token });
+    } else {
+      res.json({ success: false, message: "invalid credentials" });
     }
   } catch (error) {
-     res.json({
+    res.json({
       success: false,
-      message: "error on adding doctor",
+      message: "error on admin login",
       error: error.message,
     });
   }
-  
-}
-
+};
 
 export { addDoctor, adminLogin };

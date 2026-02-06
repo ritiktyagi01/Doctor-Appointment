@@ -10,8 +10,8 @@ import adminrouter from './routes/adminRoute.js';
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
-// connectDB();
-// connectCloudinary();
+connectDB();
+connectCloudinary();
 
 //middlewares
 app.use(express.json());//parse json data

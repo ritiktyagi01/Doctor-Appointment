@@ -1,22 +1,38 @@
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 
-//middleware to verify admin token
-const authAdmin = (req,res,next)=>{
-     
-    try {  const token = req.headers.authorization;
-    if(!token){
-        return res.json({success:false, message:"no token provided"});
+const authAdmin = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({
+        success: false,
+        message: "Authorization token missing",
+      });
     }
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-       if(decoded !== process.env.ADMIN_EMAIL+process.env.AMIN_PASSWORD) {
-        return res.json({success:false, message:"invalid token"});
-       } 
-        req.admin = decoded;
-        next();
+
+    // extract token
+    const token = authHeader.split(" ")[1];
+
+    // verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // check admin role
+    if (decoded.role !== "admin") {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied",
+      });
     }
-    catch (error) {
-        res.json({success:false, message:"invalid token"});
-    }       
-}
+
+    req.admin = decoded; // attach admin data
+    next();
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid or expired token",
+    });
+  }
+};
 
 export default authAdmin;
