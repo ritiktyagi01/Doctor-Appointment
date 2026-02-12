@@ -4,14 +4,25 @@ import doctorModel from "../models/doctorSchema.js";
 import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 
+import streamifier from "streamifier";
+
 // add doctor
 
 const addDoctor = async (req, res) => {
   try {
     //destructure doctor data from request body
-    const { name, email, password, speciality, degree, address, fees } =req.body;
-      
-      
+    const {
+      name,
+      email,
+      password,
+      speciality,
+      degree,
+      address,
+      fees,
+      experience,
+      about,
+    } = req.body;
+
     // 🔴 Image check FIRST
     if (!req.file) {
       return res.json({
@@ -19,7 +30,7 @@ const addDoctor = async (req, res) => {
         message: "Doctor image is required",
       });
     }
-    const imagePath = req.file.path;
+    const imagePath = req.file.buffer;
 
     //validations
     if (
@@ -29,7 +40,9 @@ const addDoctor = async (req, res) => {
       !speciality ||
       !degree ||
       !address ||
-      !fees
+      !fees ||
+      !experience ||
+      !about
     ) {
       return res.json({ success: false, message: "All fields are required" });
     }
@@ -48,15 +61,38 @@ const addDoctor = async (req, res) => {
     }
 
     //hashing doctor password before saving to database
+    console.time("bcrypt");
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
+    console.timeEnd("bcrypt");
 
     //save the image in cloudinary and get the url of the image
 
-    const result = await cloudinary.uploader.upload(imagePath, {
-      resource_type: "image",
-      folder: "prescripto",
-    });
+    const uploadFromBuffer = (buffer) => {
+      return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+          {
+            folder: "prescripto",
+            resource_type: "image",
+            transformation: [
+              { width: 800, crop: "limit" },
+              { quality: "auto" },
+            ],
+          },
+          (error, result) => {
+            if (result) resolve(result);
+            else reject(error);
+          },
+        );
+
+        streamifier.createReadStream(buffer).pipe(stream);
+      });
+    };
+    console.time("cloudinary");
+
+    const result = await uploadFromBuffer(imagePath);
+
+    console.timeEnd("cloudinary");
 
     const imageUrl = result.secure_url;
 
@@ -69,16 +105,16 @@ const addDoctor = async (req, res) => {
       degree,
       address: JSON.parse(address),
       fees,
+      experience,
       image: imageUrl,
       date: new Date(),
+      about,
     };
-
 
     const doctor = new doctorModel(doctorData);
     await doctor.save();
-    res.json({ success: true , message: "doctor added successfully" });
-  }
-   catch (error) {
+    res.json({ success: true, message: "doctor added successfully" });
+  } catch (error) {
     console.error("Error in addDoctor:", error);
     res.json({
       success: false,
@@ -96,7 +132,10 @@ const adminLogin = async (req, res) => {
     if (!email || !password) {
       return res.json({ success: false, message: "All fields are required" });
     }
-    if ( email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD ) {
+    if (
+      email === process.env.ADMIN_EMAIL &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
       const token = jwt.sign(
         {
           email: process.env.ADMIN_EMAIL,
@@ -111,12 +150,27 @@ const adminLogin = async (req, res) => {
       res.json({ success: false, message: "invalid credentials" });
     }
   } catch (error) {
+    console.error(error);
     res.json({
       success: false,
-      message: "error on admin login",
-      error: error.message,
+      message: error.message,
     });
   }
 };
 
-export { addDoctor, adminLogin };
+//to get api for all the doctor list fot admin panel
+
+const allDoctors = async (req, res) => {
+  try {
+    const doctors = await doctorModel.find({}).select("-password");
+    res.json({ success: true, message: "all doctors", doctors });
+  } catch (error) {
+    console.error(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+export { addDoctor, adminLogin, allDoctors };

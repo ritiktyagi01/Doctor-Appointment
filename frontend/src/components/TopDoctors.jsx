@@ -15,11 +15,11 @@ const TopDoctors = () => {
             <h1 className='text-3xl font-medium '>Top Doctors to Book </h1>
             <p className='md:w-1/3 text-gray-400 text-center text-sm'>Simply browse through our extensive list of trusted doctors.</p>
 
-            <div className='grid grid-cols-5  gap-y-5 gap-4 pt-5 w-full px-3 md:px-0'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-5 gap-4 pt-5 px-3 md:px-0'>
                 {
                     doctors.slice(0, 10).map((item, index) => (
-                        <div onClick={()=>Navigate(`/appointment/${slugify(item.name)}`)} className='border border-blue-200 cursor-pointer overflow-hidden hover:-translate-y-2.5 transiton-all duration-200'key={index} >
-                            <img className='bg-[#EAEFFF] ' src={item.image} alt="" />
+                        <div onClick={()=>Navigate(`/appointment/${slugify(item.name)}`)} className=' border border-blue-200 rounded-lg shadow-md cursor-pointer overflow-hidden hover:-translate-y-2.5 transiton-all duration-200'key={index} >
+                            <img className='bg-[#EAEFFF]  object-cover ' src={item.image} alt="" />
                             <div className='p-4'>
                                 <div className='flex items-center gap-2 text-center text-sm text-green-500 '>
                                  <p className='h-2 w-2 bg-green-500 rounded-full '></p>   <p className=''> Avaiable</p>

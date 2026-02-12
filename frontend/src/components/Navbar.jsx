@@ -12,16 +12,17 @@ const Navbar = () => {
   const navigate = useNavigate();
 
   const navItems = [
-    { name: "Home", path: "/" },
-    { name: "All Doctors", path: "/doctors" },
-    { name: "About", path: "/about" },
-    { name: "Contact", path: "/contact" },
+    { name: "HOME", path: "/" },
+    { name: "ALL DOCTORS", path: "/doctors" },
+    { name: "ABOUT", path: "/about" },
+    { name: "CONTACT", path: "/contact" },
+    
   ];
 
   return (
     <>
       {/* Navbar */}
-      <div className="backdrop-blur-2xl flex justify-between items-center px-4 py-4 border-b border-gray-400 relative z-50">
+      <div className="backdrop-blur-2xl flex justify-between items-center px-4 py-4 border-b border-gray-400 relative z-50 mb-5">
 
         {/* Logo */}
         <img
@@ -39,14 +40,19 @@ const Navbar = () => {
                 <>
                   <li>{item.name}</li>
                   <hr
-                    className={`h-0.5 w-3/5 bg-primary transition-all duration-300 ${isActive ? "block" : "hidden"
+                    className={`h-0.5 w-3/5 bg-yellow transition-all duration-300 ${isActive ? "block" : "hidden"
                       }`}
                   />
                 </>
               )}
             </NavLink>
           ))}
+          <div className="">
+            <a  href="http://localhost:5173/admin/dashboard"><span className="border border-gray-300 rounded-full h-7 w-28  flex items-center justify-center p-auto text-sm ">Admin Panel</span> </a>
+          </div>
+        
         </ul>
+
 
         {/* Right Side */}
         <div className="flex items-center gap-4">
@@ -182,6 +188,7 @@ const Navbar = () => {
           </div>
         </div>
       )}
+      
     </>
   );
 };

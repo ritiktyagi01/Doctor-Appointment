@@ -1,25 +1,67 @@
 import React, { useState } from "react";
+import { useContext } from "react";
+import { AppContext } from "../context/AppContext";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [state, setState] = useState("login");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { token, backendURL, setToken } = useContext(AppContext);
 
   const toggleState = () => {
-    setState(prev => (prev === "login" ? "signUp" : "login"));
+    setState((prev) => (prev === "login" ? "signUp" : "login"));
   };
 
-  const onSubmitHandler = (event) => {
+  const onSubmitHandler = async (event) => {
     event.preventDefault();
+
+    try {
+      if (state === "login") {
+        const { data } = await axios(`${backendURL}/api/user/login`, {
+          email,
+          password,
+        });
+      }
+      
+      else {
+        const { data } = await axios(`${backendURL}/api/user/signup`, {
+          name,
+          email,
+          password,
+        });
+
+
+        if (data.success) {
+          localStorage.setItem("token", data.token);
+          setToken(data.token);
+        } 
+        
+        else {
+          toast.error(data.message);
+        }
+        // console.log(data)
+      }
+ 
+    }
+    
+    
+    catch (error) {
+      toast.error(error.message);
+    }
     console.log({ name, email, password, state });
   };
 
+
+  
   return (
     <form onSubmit={onSubmitHandler} className="flex items-center min-h-[80vh]">
-      <div className="flex flex-col gap-3 m-auto items-start p-8 min-w-[320px] sm:min-w-95
-                      border border-gray-100 text-zinc-600 text-sm rounded-lg shadow-lg">
-
+      <div
+        className="flex flex-col gap-3 m-auto items-start p-8 min-w-[320px] sm:min-w-95
+                      border border-gray-100 text-zinc-600 text-sm rounded-lg shadow-lg"
+      >
         <p className="text-xl font-bold">
           {state === "login" ? "Login" : "Create Account"}
         </p>
@@ -29,11 +71,12 @@ const Login = () => {
         </p>
 
         <div className="flex flex-col gap-3 w-full">
-
           {/* Full name only for signup */}
           {state === "signUp" && (
             <div>
-              <p className="mb-2 text-sm font-medium text-gray-600">Full Name</p>
+              <p className="mb-2 text-sm font-medium text-gray-600">
+                Full Name
+              </p>
               <input
                 type="text"
                 value={name}
@@ -86,7 +129,6 @@ const Login = () => {
               {state === "login" ? "Sign up" : "Login"}
             </button>
           </p>
-
         </div>
       </div>
     </form>

@@ -6,8 +6,8 @@ const Dashboard = () => {
     <>
       <div className="mx-8">
         {/* statistics */}
-        <div className="flex flex-col md:flex-row gap-10 items-center md:items-start">
-          <div className="bg-white mt-5  w-60 py-5  flex  pl-5 gap-5 reounded-lg shadow-lg ">
+        <div className="flex flex-wrap md:flex-row gap-5  items-center">
+          <div className="bg-white mt-5  w-60  py-5  flex  pl-5 gap-5 rounded-lg shadow-lg ">
             <img
               className="bg-white "
               src={assets.doctor_icon}
@@ -19,7 +19,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white mt-5  w-60 py-5  flex pl-5 gap-5 reounded-lg shadow-lg ">
+          <div className="bg-white mt-5  w-60 py-5  flex pl-5 gap-5 rounded-lg shadow-lg ">
             <img
               className="bg-white "
               src={assets.appointments_icon}
@@ -31,7 +31,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="bg-white mt-5  w-60 py-5  flex pl-5 gap-5 reounded-lg shadow-lg ">
+          <div className="bg-white mt-5  w-60 py-5  flex pl-5 gap-5 rounded-lg shadow-lg ">
             <img
               className="bg-white "
               src={assets.patients_icon}

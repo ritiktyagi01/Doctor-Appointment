@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import connectDB from './config/db.js';
 import connectCloudinary from './config/cloudinary.js';
 import adminrouter from './routes/adminRoute.js';
+import doctorRouter from './routes/doctorRoute.js';
+import userRouter from './routes/userRoute.js';
 
 
 //app configuration
@@ -20,8 +22,15 @@ app.use(express.urlencoded({ extended: true })); // parse form data
 
 //routes endpoints
 //http://localhost:5000/api/admin/add-doctor  
-//http://localhost:5000/api/admin/admin-login
+//http://localhost:5000/api/admin/login
 app.use('/api/admin',adminrouter);
+
+//http://localhost:5000/api/doctor/list
+app.use('/api/doctor',doctorRouter)
+
+
+//http://localhost:5000/api/user/login
+app.use('/api/user',userRouter)
 
 
 

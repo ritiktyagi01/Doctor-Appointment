@@ -4,22 +4,25 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useContext } from "react";
 import { AdminContext } from "../../context/AdminContext";
+import { useRef } from "react";
 
 const AddDoctor = () => {
   const [docimg, setDocimg] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [speciality, setSpeciality] = useState("");
+  const [speciality, setSpeciality] = useState("General physician");
   const [degree, setDegree] = useState("");
   const [fees, setFees] = useState("40");
   const [experience, setExperience] = useState("1 Year");
   const [about, setAbout] = useState("");
   const [address1, setAddress1] = useState("");
   const [address2, setAddress2] = useState("");
+  const fileInputRef = useRef(null);
+
 
   //
-  const { token, backendUrl } = useContext(AdminContext);
+  const { token, backendUrl ,getAllDoctor } = useContext(AdminContext);
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -27,6 +30,7 @@ const AddDoctor = () => {
     try {
       if (!docimg) {
         toast.error("Image Not Selected ");
+        return;
       }
 
       const formData = new FormData();
@@ -45,6 +49,7 @@ const AddDoctor = () => {
         JSON.stringify({ line1: address1, line2: address2 }),
       );
 
+      //print all the data in console
       formData.forEach((value, key) => {
         console.log(`${key}:${value}`);
       });
@@ -54,23 +59,35 @@ const AddDoctor = () => {
         formData,
         {
           headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`
+            
           },
         },
       );
-      console.log(token);
+
+      console.log('data mil gya ')
+     
 
       if (data.success) {
-        console.log(data.message);
+        console.log("all filled");
         toast.success(data.message);
+        await getAllDoctor();
+        setDocimg(false);
+        setName("");
+        setEmail("");
+        setPassword("");
+        setFees("");
+        setExperience("");
+        setSpeciality('');
+        setAbout("");
+        setAddress1("");
+        setAddress2("");
       } 
       
-      else {
-        toast.error(data.message);
-      }
-
-    } catch (error) {}
+      
+    } catch (error) {
+      
+    }
   };
   return (
     <>
@@ -89,6 +106,7 @@ const AddDoctor = () => {
             </label>
             <input
               type="file"
+                ref={fileInputRef}
               onChange={(e) => setDocimg(e.target.files[0])}
               id="doc-img"
               hidden
@@ -146,6 +164,7 @@ const AddDoctor = () => {
                 type="text"
                 onChange={(e) => setDegree(e.target.value)}
                 value={degree}
+                placeholder="MBBS"
                 required
               />
             </div>
@@ -235,7 +254,7 @@ const AddDoctor = () => {
           <button
             type="submit"
             className=" bg-primary text-white rounded-lg py-2 w-sm
-                       hover:opacity-90 transition-all duration-500 cursor-pointer text-base"
+                       hover:opacity-90 transition-all duration-200 cursor-pointer text-base"
           >
             Add doctor
           </button>

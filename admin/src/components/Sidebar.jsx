@@ -16,8 +16,8 @@ const Sidebar = () => {
   };
 
   const linkClass = ({ isActive }) =>
-    `flex items-center gap-3 px-4 py-3 cursor-pointer
-     ${isActive ? "bg-[#F2F3FF] border-r-4 border-primary" : ""}`;
+    `flex items-center gap-3 px-7 py-3 cursor-pointer 
+     ${isActive ? "bg-[#F2F3FF] border-r-4 border-primary" : "border-r-4 border-transparent"}`;
 
   return (
     <>
