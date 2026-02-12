@@ -20,42 +20,32 @@ const Login = () => {
 
     try {
       if (state === "login") {
+
         const { data } = await axios(`${backendURL}/api/user/login`, {
           email,
           password,
         });
       }
-      
-      else {
+       else {
         const { data } = await axios(`${backendURL}/api/user/signup`, {
           name,
           email,
           password,
         });
 
-
         if (data.success) {
           localStorage.setItem("token", data.token);
           setToken(data.token);
-        } 
-        
-        else {
+        } else {
           toast.error(data.message);
         }
-        // console.log(data)
       }
- 
-    }
-    
-    
-    catch (error) {
+    } catch (error) {
       toast.error(error.message);
     }
     console.log({ name, email, password, state });
   };
 
-
-  
   return (
     <form onSubmit={onSubmitHandler} className="flex items-center min-h-[80vh]">
       <div

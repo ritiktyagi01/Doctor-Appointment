@@ -118,7 +118,7 @@ const Doctors = () => {
         <div className="w-full grid grid-cols-4 gap-4 gap-y-6">
           {
             filterDoc.map((item, index) => (
-              <div onClick={() => Navigate(`/appointment/${slugify(item.name)}`)} className='border border-blue-200 cursor-pointer overflow-hidden hover:-translate-y-2.5 transiton-all duration-200' key={index} >
+              <div onClick={() => Navigate(`/appointment/${slugify(item.name)}/${item._id}`)} className='border border-blue-200 cursor-pointer overflow-hidden hover:-translate-y-2.5 transiton-all duration-200' key={index} >
                 <img className='bg-[#EAEFFF] ' src={item.image} alt="" />
                 <div className='p-4'>
                   <div className='flex items-center gap-2 text-center text-sm text-green-500 '>

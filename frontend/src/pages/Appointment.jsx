@@ -4,35 +4,23 @@ import { AppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import { ArrowRight } from "lucide-react";
 import { useClerk, useUser } from "@clerk/clerk-react";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { useAuth } from "@clerk/clerk-react";
 
 const Appointment = () => {
-  const { name } = useParams();
-  const { doctors } = useContext(AppContext);
+  const { name,docId } = useParams();
+  const { doctors,backendURL,token,getAlldoctor } = useContext(AppContext);
   const [docInfo, setDocinfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
-  const { user } = useUser();
+ 
+const { getToken } = useAuth();
   const { openSignIn } = useClerk();
+  const { isSignedIn } = useUser();
 
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const timeSlots = [
-    "9:00 AM",
-    "9:30 AM",
-    "10:00 AM",
-    "10:30 AM",
-    "11:00 AM",
-    "11:30 AM",
-    "12:00 PM",
-    "12:30 PM",
-    "1:00 PM",
-    "1:30 PM",
-    "2:00 PM",
-    "2:30 PM",
-    "3:00 PM",
-    "3:30 PM",
-    "4:00 PM",
-    "4:30 PM",
-  ];
+  
 
   const slugify = (text) => text.trim().replace(/\s+/g, "-");
 
@@ -85,24 +73,91 @@ const Appointment = () => {
   const Navigate = useNavigate();
 
   useEffect(() => {
-    console.log("Available Slots:", docSlots);
-    console.log("docSlots:", docSlots);
-    console.log("slotIndex:", slotIndex);
-    console.log("current slots:", docSlots[slotIndex]);
+    // console.log("Available Slots:", docSlots);
+    // console.log("docSlots:", docSlots);
+    // console.log("slotIndex:", slotIndex);
+    // console.log("current slots:", docSlots[slotIndex]);
   }, [docSlots]);
+
+
+const bookAppointment = async () => {
+
+  if (!isSignedIn) {
+    openSignIn();
+    toast.warning("Login to book appointment");
+    return;
+  }
+
+  try {
+
+    if (!docSlots[slotIndex] || !activeTime) {
+  toast.warning("Please select a slot");
+  return;
+}
+
+const selectedSlot = docSlots[slotIndex].find(
+  slot => slot.time === activeTime
+);
+
+if (!selectedSlot) {
+  toast.warning("Slot not available");
+  return;
+}
+
+const date = new Date(selectedSlot.dateTime);
+
+const day = date.getDate();
+const month = date.getMonth() + 1;
+const year = date.getFullYear();
+
+const slotDate = `${day}-${month}-${year}`;
+const slotTime = activeTime;
+
+
+   const docId = docInfo._id;
+
+    console.log( docId,slotDate, slotTime);
+
+   const token = await getToken();
+
+const { data } = await axios.post(
+  `${backendURL}/api/user/book-appointment`,
+  { docId, slotDate, slotTime },
+  {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }
+);
+
+console.log(data)
+    if (data.success) {
+      toast.success("Appointment booked successfully");
+      getAlldoctor();
+      Navigate("/my-appointments");
+    } else {
+      toast.error(data.message);
+    }
+
+  } catch (error) {
+    console.log(error);
+    toast.error("Server error");
+  }
+};
+
 
   useEffect(() => {
     getAvailabelSlots();
   }, [docInfo]);
 
-  useEffect(() => {
-    if (!doctors || !name) return;
+useEffect(() => {
+  if (!doctors || !docId) return;
 
-    const info = doctors.find((doc) => slugify(doc.name) === name);
+  const info = doctors.find((doc) => doc._id === docId);
+  setDocinfo(info);
 
-    console.log("Doctor found:", info);
-    setDocinfo(info);
-  }, [doctors, name]);
+}, [doctors, docId]);
+
 
   if (!docInfo) {
     return <p className="text-center">Doctor not found</p>;
@@ -212,7 +267,7 @@ const Appointment = () => {
             )}
           </div>
 
-          {/* Book Button */}
+          {/* Book Button
           {user ? (
             <button
               onClick={() => Navigate("/my-appointments")}
@@ -223,13 +278,21 @@ const Appointment = () => {
           ) : (
             <button
               onClick={() => {
-                openSignIn();
+              bookAppointment()
               }}
               className="mt-6 bg-primary w-fit text-white px-8 py-3 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer  focus:outline-none focus:ring-2 focus:ring-blue-500 "
             >
               Book an appointment <ArrowRight className="inline " />
             </button>
-          )}
+          )} */}
+           <button
+              onClick={() => {
+              bookAppointment()
+              }}
+              className="mt-6 bg-primary w-fit text-white px-8 py-3 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer  focus:outline-none focus:ring-2 focus:ring-blue-500 "
+            >
+              Book an appointment <ArrowRight className="inline " />
+            </button>
         </div>
 
         {/* Footer section */}

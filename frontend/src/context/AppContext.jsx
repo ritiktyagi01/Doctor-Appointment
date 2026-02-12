@@ -18,7 +18,7 @@ const AppContextProvider = ({ children }) => {
 
       if (data.success) {
         setDoctors(data.data);
-        console.log(data);
+        
       } else {
         toast.error(data.message);
       }

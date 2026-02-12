@@ -2,6 +2,9 @@ import validator from "validator";
 import bcrypt from "bcrypt";
 import userModel from "../models/userSchema.js";
 import jwt from "jsonwebtoken";
+import doctorModel from "../models/doctorSchema.js";
+import appointmentModel from "../models/appointmentSchema.js";
+
 
 //Api to resgister the use
 
@@ -116,4 +119,69 @@ const userLogin = async (req, res) => {
   }
 };
 
-export { registerUser , userLogin};
+
+const bookAppointment = async (req, res) => {
+  try {
+
+    const { docId, slotDate, slotTime } = req.body;
+
+   const { userId } = req.auth;
+
+
+
+    const docData = await doctorModel.findById(docId);
+
+    if (!docData) {
+      return res.json({
+        success: false,
+        message: "Doctor not found"
+      });
+    }
+
+    let slots_booked = docData.slots_booked || {};
+
+    if (slots_booked[slotDate]) {
+      if (slots_booked[slotDate].includes(slotTime)) {
+        return res.json({
+          success: false,
+          message: "Slot already booked"
+        });
+      }
+      slots_booked[slotDate].push(slotTime);
+    } else {
+      slots_booked[slotDate] = [slotTime];
+    }
+
+    const appointmentData = {
+      userId,
+      docId,
+      slotDate,
+      slotTime,
+      amount: docData.fees,
+      date: Date.now()
+    };
+
+    const newAppointment = new appointmentModel(appointmentData);
+    await newAppointment.save();
+
+    await doctorModel.findByIdAndUpdate(docId, {
+      $set: { slots_booked }
+    });
+
+    res.json({
+      success: true,
+      message: "Appointment booked successfully",
+      data: newAppointment
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+
+
+export { registerUser , userLogin,bookAppointment};
