@@ -3,18 +3,24 @@ import { useContext } from "react";
 import { AdminContext } from "../../context/AdminContext";
 import { useEffect } from "react";
 import { AppContext } from "../../context/AppContext";
+import { assets } from "../../assets/assets";
 
 const AllAppointments = () => {
-  const { token, appointment, getAllAppointment } = useContext(AdminContext);
-  const { calculateAge } = useContext(AppContext);
+  const { token, appointment, getAllAppointment,cancelAppointment } = useContext(AdminContext);
+  const { calculateAge,slotDateFormat } = useContext(AppContext);
 
-  useEffect(() => {
-    if (token) {
-      getAllAppointment();
-    }
-  }, [token]);
-  console.log("appointment",appointment)
-  console.log(appointment.userData)
+useEffect(() => {
+  if (token) {
+    getAllAppointment();
+  }
+}, [token]);
+
+
+useEffect(() => {
+  console.log("appointment", appointment);
+}, [appointment]);
+
+ 
 
   return (
     <>
@@ -46,11 +52,24 @@ const AllAppointments = () => {
                 <p>{item.userData?.name}</p>
               </div>
 
+              <p className="max-sm:hidden">
+                {item.userData?.dob ? calculateAge(item.userData.dob) : "-"}
+              </p>
+              <p>{slotDateFormat(item.slotDate)},{item.slotTime}</p>
+             <div className="flex items-center gap-2">
+              <img
+  className="w-8 rounded-full bg-gray-200"
+  src={item.docData?.image}
+  alt=""
+/> <p>{item.docData?.name}</p>
+              </div>
               <p>
-  {item.userData?.dob
-    ? calculateAge(item.userData.dob)
-    : "-"}
-</p>
+                <span>$</span>
+               {item.amount}
+              </p>
+              {
+                item.cancelled?<p className="text-sm text-red-400 font-medium">Cancelled</p>:<img onClick={()=>cancelAppointment(item._id)} className="w-10 cursor-pointer" src={assets.cancel_icon} alt=""/>
+              }
 
             </div>
           ))}

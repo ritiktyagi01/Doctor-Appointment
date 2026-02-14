@@ -11,12 +11,12 @@ import Razorpay from "razorpay";
 
 const registerUser = async (req, res) => {
   try {
-    const { userId } = req.auth;   // From requireAuth()
+    const { userId } = req.auth; // From requireAuth()
 
     if (!userId) {
       return res.status(401).json({
         success: false,
-        message: "Unauthorized"
+        message: "Unauthorized",
       });
     }
 
@@ -28,7 +28,7 @@ const registerUser = async (req, res) => {
     if (existingUser) {
       return res.json({
         success: true,
-        message: "User already exists"
+        message: "User already exists",
       });
     }
 
@@ -44,14 +44,13 @@ const registerUser = async (req, res) => {
 
     res.json({
       success: true,
-      message: "User saved successfully"
+      message: "User saved successfully",
     });
-
   } catch (error) {
     console.error(error);
     res.json({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 };
@@ -130,12 +129,10 @@ const getUserProfile = async (req, res) => {
     };
 
     res.json({ success: true, userData });
-
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
-
 
 //api update userprofile
 const updateUserProfile = async (req, res) => {
@@ -162,21 +159,17 @@ const updateUserProfile = async (req, res) => {
         gender,
         dob,
       },
-      { upsert: true, new: true }
+      { upsert: true, new: true },
     );
 
     res.json({
       success: true,
       message: "User profile updated",
     });
-
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
 };
-
-
- 
 
 //api to book appointment
 const bookAppointment = async (req, res) => {
@@ -191,7 +184,7 @@ const bookAppointment = async (req, res) => {
       });
     }
 
-     const user = await clerkClient.users.getUser(userId);
+    const user = await clerkClient.users.getUser(userId);
     const dbUser = await userModel.findOne({ clerkId: userId });
 
     const userData = {
@@ -203,7 +196,7 @@ const bookAppointment = async (req, res) => {
       gender: dbUser?.gender || "",
       dob: dbUser?.dob || "",
     };
-console.log(userData)
+    console.log(userData);
     const docData = await doctorModel.findById(docId);
 
     const appointmentData = {
@@ -349,6 +342,37 @@ const verifyPayment = async (req, res) => {
   }
 };
 
+//api to cancel the appointment from admin page
+const appointmentCancel = async (req, res) => {
+  try {
+    const { appointmentId } = req.body;
+
+    const appointmentData = await appointmentModel.findById(appointmentId);
+
+    // Mark cancelled
+    await appointmentModel.findByIdAndUpdate(appointmentId, {
+      cancelled: true,
+    });
+
+    // Release slot
+    const { docId, slotDate, slotTime } = appointmentData;
+
+    const doctorData = await doctorModel.findById(docId);
+
+    let slots_booked = doctorData.slots_booked;
+    slots_booked[slotDate] = slots_booked[slotDate].filter(
+      (time) => time !== slotTime,
+    );
+
+    await doctorModel.findByIdAndUpdate(docId, { slots_booked });
+
+    res.json({ success: true, message: "Appointment cancelled" });
+  } catch (error) {
+    console.log(error);
+    res.json({ success: false, message: error.message });
+  }
+};
+
 export {
   registerUser,
   userLogin,
@@ -357,5 +381,7 @@ export {
   cancelAppointment,
   paymentRazorpay,
   verifyPayment,
-  updateUserProfile,getUserProfile
+  updateUserProfile,
+  getUserProfile,
+  appointmentCancel
 };

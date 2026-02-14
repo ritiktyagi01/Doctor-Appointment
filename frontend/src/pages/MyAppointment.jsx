@@ -49,19 +49,27 @@ const MyAppointment = () => {
         },
       );
 
-      // console.log("Full Response:", data);
+      console.log("Full Response:", data);
 
       if (data.success) {
         setAppointments(data.appointments.reverse());
         console.log("Appointments:", data.appointments);
-        // toast.success("List of Appointments");
+         toast.success("List of Appointments");
+
       }
     } catch (error) {
       console.log(error);
       toast.error(error.message);
     }
   };
+const fetchData = async () => {
+    if (!isSignedIn) return;
 
+    const token = await getToken();
+    if (!token) return;
+
+    getAppointmentData(token);
+  };
   const cancelAppointment = async (appointmentId) => {
     if (!appointmentId) return; // safety guard
 
@@ -90,14 +98,7 @@ const MyAppointment = () => {
     }
   };
   // console.log(appointments)
-  const fetchData = async () => {
-    if (!isSignedIn) return;
-
-    const token = await getToken();
-    if (!token) return;
-
-    getAppointmentData(token);
-  };
+  
   const initPay = (order) => {
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,

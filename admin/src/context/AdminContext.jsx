@@ -3,7 +3,6 @@ import { createContext } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-
 export const AdminContext = createContext();
 const AdminContextProvider = ({ children }) => {
   const [token, setToken] = useState(
@@ -13,7 +12,13 @@ const AdminContextProvider = ({ children }) => {
   );
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
   const [doctors, setDoctors] = useState([]);
-  const[appointment , setAppointment] = useState([]);
+  const [appointment, setAppointment] = useState([]);
+  const [dashData, setdashData] = useState({
+    doctor: 0,
+    user: 0,
+    appointment: 0,
+    latestAppointment: [],
+  });
 
   const getAllDoctor = async () => {
     try {
@@ -76,11 +81,54 @@ const AdminContextProvider = ({ children }) => {
       );
       if (data.success) {
         setAppointment(data.appointmentData);
-        
-        toast.success(data.message)
+
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
       }
-      else{
-        toast.error(data.message)
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
+  const cancelAppointment = async (appointmentId) => {
+    try {
+      const { data } = await axios.post(
+        `${backendUrl}/api/admin/appointment-canncel`,
+        { appointmentId },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      if (data.success) {
+        toast.success(data.message);
+        getAllAppointment();
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message);
+    }
+  };
+
+  const dashboardData = async () => {
+    try {
+      const { data } = await axios.get(`${backendUrl}/api/admin/dashboard`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (data.success) {
+        setdashData(data.dashData);
+        console.log("data", data.dashData);
+        toast.success(data.message);
+      } else {
+        toast.error(data.message);
       }
     } catch (error) {
       console.log(error);
@@ -97,7 +145,12 @@ const AdminContextProvider = ({ children }) => {
     setDoctors,
     changeAvailability,
     getAllAppointment,
-    appointment,setAppointment
+    appointment,
+    setAppointment,
+    cancelAppointment,
+    dashboardData,
+    dashData,
+    setdashData,
   };
 
   return (

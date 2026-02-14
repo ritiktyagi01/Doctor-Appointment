@@ -1,6 +1,8 @@
 //add
 
 import doctorModel from "../models/doctorSchema.js";
+import bycrpt from "bcrypt"
+import jwt from "jsonwebtoken"
 
 export const doctorAvailable = async (req, res) => {
   try {
@@ -51,6 +53,38 @@ export const doctorlist = async (req, res) => {
     });
   }
 };
+
+
+//Api to login on doctor side
+export const loginDoctor = async (req,res) => {
+
+  try {
+    const {email, password} = req.body;
+    const doctor = await doctorModel.findOne({email})
+    
+    if(!doctor){
+      return res.json({success:false,message:"Invaild credientials"})
+    }
+
+    const isMatch = await bycrpt.compare(password,doctor.password)
+
+    if(isMatch){
+const token = jwt.sign({id:doctor._id},process.env.JWT_SECRET);
+res.json({success:true,token})
+    }
+    else{
+      res.json({success:false,message:"Invaild credientials"})
+    }
+
+  } catch (error) {
+    console.log(error)
+      res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+  
+}
 
 // export const doctorDelete = async (req, res) => {
 //   try {

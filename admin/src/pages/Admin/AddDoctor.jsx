@@ -23,6 +23,7 @@ const AddDoctor = () => {
 
   //
   const { token, backendUrl ,getAllDoctor } = useContext(AdminContext);
+  console.log(token)
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();

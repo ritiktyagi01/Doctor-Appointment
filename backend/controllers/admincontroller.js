@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 
 import streamifier from "streamifier";
 import appointmentModel from "../models/appointmentSchema.js";
+import userModel from "../models/userSchema.js";
 
 // add doctor
 
@@ -195,4 +196,31 @@ const adminAppointment = async (req,res) => {
   
 }
 
-export { addDoctor, adminLogin, allDoctors , adminAppointment };
+//api to get dashboard data
+const dashboardData = async (req,res) => {
+  try {
+    const doctor = await doctorModel.find({});
+    const user= await userModel.find({})
+const appointment = await appointmentModel.find({})
+const dashData = {
+  doctor:doctor.length,
+  user:user.length,
+  appointment:appointment.length,
+  latestAppointment:appointment.reverse().slice(0,5)
+}  
+if(!dashData){
+  res.json({success:false,message:"No Data Found"})
+}
+res.json({success:true,dashData})
+
+  } catch (error) {
+    console.error(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+  
+}
+
+export { addDoctor, adminLogin, allDoctors , adminAppointment , dashboardData };

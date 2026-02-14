@@ -4,12 +4,14 @@ import { useState } from "react";
 import { AdminContext } from "../context/AdminContext";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { DoctorContext } from "../context/DoctorContext";
 
 const Login = () => {
   const [state, setState] = useState("Admin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const { setToken, backendUrl } = useContext(AdminContext);
+  const {setDtoken} = useContext(DoctorContext)
   const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
@@ -41,18 +43,32 @@ const Login = () => {
           toast.error(data.message);
         }
       } else {
+        const { data } = await axios.post(`${backendUrl}/api/doctor/login`, {
+          email,
+          password,
+        });
+
+        if (data.success) {
+          localStorage.setItem("dtoken", data.token);
+          setDtoken(data.token);
+          console.log(data.token);
+        } else {
+          toast.error(data.message);
+        }
+        
       }
     } catch (error) {
       console.log("error", error);
     }
   };
   return (
- <><form
+ <div className="min-h-[80vh] flex items-center justify-center bg-[#F8F9FD] ">
+  <form
         onSubmit={onSubmitHandler}
-        className="flex items-center  min-h-[80vh]"
+        className=" w-full max-w-sm"
       >
         <div
-          className="flex flex-col gap-3 m-auto items-start p-8 min-w-75 sm:min-w-85
+          className="flex flex-col gap-3 m-auto items-center p-8 min-w-75 sm:min-w-85
                       border border-gray-100 text-zinc-600 text-sm rounded-lg shadow-lg"
         >
           <h1 className="text-2xl m-auto font-medium ">
@@ -114,7 +130,7 @@ const Login = () => {
         </div>
         <hr />
       </form>
- </>
+ </div>
      
       
     
