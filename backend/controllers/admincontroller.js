@@ -5,6 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 import jwt from "jsonwebtoken";
 
 import streamifier from "streamifier";
+import appointmentModel from "../models/appointmentSchema.js";
 
 // add doctor
 
@@ -173,4 +174,25 @@ const allDoctors = async (req, res) => {
   }
 };
 
-export { addDoctor, adminLogin, allDoctors };
+//api to get all the appointment 
+const adminAppointment = async (req,res) => {
+
+  try {
+     const appointmentData = await appointmentModel.find({});
+     if(!appointmentData){
+      res.json({success:false,message:"No Appointments"})
+
+     }
+  res.json({success:true,message:"All Appointments",appointmentData})
+  } catch (error) {
+    console.error(error);
+    res.json({
+      success: false,
+      message: error.message,
+    });
+  }
+ 
+  
+}
+
+export { addDoctor, adminLogin, allDoctors , adminAppointment };

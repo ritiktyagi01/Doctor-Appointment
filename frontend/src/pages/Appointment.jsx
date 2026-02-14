@@ -9,25 +9,25 @@ import axios from "axios";
 import { useAuth } from "@clerk/clerk-react";
 
 const Appointment = () => {
-  const { name,docId } = useParams();
-  const { doctors,backendURL,token,getAlldoctor } = useContext(AppContext);
+  const { name, docId } = useParams();
+  const { doctors, backendURL, token, getAlldoctor } = useContext(AppContext);
   const [docInfo, setDocinfo] = useState(null);
   const [docSlots, setDocSlots] = useState([]);
   const [slotIndex, setSlotIndex] = useState(0);
- 
-const { getToken } = useAuth();
+
+  const { getToken } = useAuth();
   const { openSignIn } = useClerk();
   const { isSignedIn } = useUser();
 
   const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  
 
   const slugify = (text) => text.trim().replace(/\s+/g, "-");
 
-  const getAvailabelSlots = async () => {
-    setDocSlots([]);
-    // getting current date
+  const getAvailabelSlots = () => {
+    if (!docInfo) return; // 🔒 Prevent crash
+
     let today = new Date();
+    let allSlots = [];
 
     for (let i = 0; i < 7; i++) {
       let currentDate = new Date();
@@ -35,38 +35,58 @@ const { getToken } = useAuth();
 
       let endTime = new Date();
       endTime.setDate(today.getDate() + i);
-      endTime.setHours(17, 0, 0, 0); // setting end time to 5 PM
+      endTime.setHours(17, 0, 0, 0);
 
-      // formating hours and minutes
       if (today.getDate() === currentDate.getDate()) {
         currentDate.setHours(
           currentDate.getHours() > 10 ? currentDate.getHours() + 1 : 10,
         );
-        // setting start time to 9 AM
         currentDate.setMinutes(currentDate.getMinutes() > 30 ? 30 : 0);
       } else {
-        currentDate.setHours(9, 0, 0, 0); // setting start time to 9 AM
+        currentDate.setHours(9, 0, 0, 0);
         currentDate.setMinutes(0);
       }
+
       let slots = [];
 
       while (currentDate < endTime) {
         let hours = currentDate.getHours();
         let minutes = currentDate.getMinutes();
         let ampm = hours >= 12 ? "PM" : "AM";
+
         hours = hours % 12;
         hours = hours ? hours : 12;
         minutes = minutes < 10 ? "0" + minutes : minutes;
-        let timeStr = hours + ":" + minutes + " " + ampm;
-        slots.push({
-          dateTime: new Date(currentDate),
-          time: timeStr,
-        });
+
+        let timeStr = `${hours}:${minutes} ${ampm}`;
+
+        let day = currentDate.getDate();
+        let month = currentDate.getMonth() + 1;
+        let year = currentDate.getFullYear();
+
+        const slotDate = `${day}-${month}-${year}`;
+        const slotTime = timeStr;
+
+        const bookedSlots = docInfo?.slots_booked?.[slotDate] || [];
+
+        const isSlotAvailable = !bookedSlots.includes(slotTime);
+
+        if (isSlotAvailable) {
+          slots.push({
+            dateTime: new Date(currentDate),
+            time: timeStr,
+          });
+        }
+
         currentDate.setMinutes(currentDate.getMinutes() + 30);
       }
-      setDocSlots((prev) => [...prev, slots]);
+
+      allSlots.push(slots);
     }
+
+    setDocSlots(allSlots); // ✅ Set once, not repeatedly
   };
+
   const [activeDay, setActiveDay] = useState(0);
   const [activeTime, setActiveTime] = useState(null);
 
@@ -79,85 +99,79 @@ const { getToken } = useAuth();
     // console.log("current slots:", docSlots[slotIndex]);
   }, [docSlots]);
 
-
-const bookAppointment = async () => {
-
-  if (!isSignedIn) {
-    openSignIn();
-    toast.warning("Login to book appointment");
-    return;
-  }
-
-  try {
-
-    if (!docSlots[slotIndex] || !activeTime) {
-  toast.warning("Please select a slot");
-  return;
-}
-
-const selectedSlot = docSlots[slotIndex].find(
-  slot => slot.time === activeTime
-);
-
-if (!selectedSlot) {
-  toast.warning("Slot not available");
-  return;
-}
-
-const date = new Date(selectedSlot.dateTime);
-
-const day = date.getDate();
-const month = date.getMonth() + 1;
-const year = date.getFullYear();
-
-const slotDate = `${day}-${month}-${year}`;
-const slotTime = activeTime;
-
-
-   const docId = docInfo._id;
-
-    console.log( docId,slotDate, slotTime);
-
-   const token = await getToken();
-
-const { data } = await axios.post(
-  `${backendURL}/api/user/book-appointment`,
-  { docId, slotDate, slotTime },
-  {
-    headers: {
-      Authorization: `Bearer ${token}`
-    }
-  }
-);
-
-console.log(data)
-    if (data.success) {
-      toast.success("Appointment booked successfully");
-      getAlldoctor();
-      Navigate("/my-appointments");
-    } else {
-      toast.error(data.message);
+  const bookAppointment = async () => {
+    if (!isSignedIn) {
+      openSignIn();
+      toast.warning("Login to book appointment");
+      return;
     }
 
-  } catch (error) {
-    console.log(error);
-    toast.error("Server error");
-  }
-};
+    try {
+      if (!docSlots[slotIndex] || !activeTime) {
+        toast.warning("Please select a slot");
+        return;
+      }
 
+      const selectedSlot = docSlots[slotIndex].find(
+        (slot) => slot.time.trim() === activeTime.trim(),
+      );
+
+      if (!selectedSlot) {
+        console.log("Available slots:", docSlots[slotIndex]);
+        console.log("Selected time:", activeTime);
+        toast.warning("Slot not available");
+        return;
+      }
+
+      const date = new Date(selectedSlot.dateTime);
+
+      const day = date.getDate();
+      const month = date.getMonth() + 1;
+      const year = date.getFullYear();
+
+      const slotDate = `${day}-${month}-${year}`;
+      const slotTime = activeTime;
+
+      const docId = docInfo._id;
+
+      console.log(docId, slotDate, slotTime);
+
+      const token = await getToken();
+
+      const { data } = await axios.post(
+        `${backendURL}/api/user/book-appointment`,
+        { docId, slotDate, slotTime },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      console.log(data);
+      if (data.success) {
+        toast.success("Appointment booked successfully");
+        getAlldoctor();
+        Navigate("/my-appointments");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error("Server error");
+    }
+  };
 
   useEffect(() => {
     getAvailabelSlots();
   }, [docInfo]);
 
-useEffect(() => {
-  if (!doctors || !docId) return;
+  useEffect(() => {
+    if (!doctors || !docId) return;
 
-  const info = doctors.find((doc) => doc._id === docId);
-  setDocinfo(info);
-
-}, [doctors, docId]);
-
+    const info = doctors.find((doc) => doc._id === docId);
+    setDocinfo(info);
+  }, [doctors, docId]);
 
   if (!docInfo) {
     return <p className="text-center">Doctor not found</p>;
@@ -202,7 +216,9 @@ useEffect(() => {
 
               <p className="text-gray-500 mb-10 text-lg">
                 Appointment Fee :{" "}
-                <p className="font-medium inline text-black">${docInfo.fees}</p>
+                <span className="font-medium inline text-black">
+                  ${docInfo.fees}
+                </span>
               </p>
             </div>
           </div>
@@ -285,14 +301,14 @@ useEffect(() => {
               Book an appointment <ArrowRight className="inline " />
             </button>
           )} */}
-           <button
-              onClick={() => {
-              bookAppointment()
-              }}
-              className="mt-6 bg-primary w-fit text-white px-8 py-3 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer  focus:outline-none focus:ring-2 focus:ring-blue-500 "
-            >
-              Book an appointment <ArrowRight className="inline " />
-            </button>
+          <button
+            onClick={() => {
+              bookAppointment();
+            }}
+            className="mt-6 bg-primary w-fit text-white px-8 py-3 rounded-full hover:scale-105 transition-all duration-200 cursor-pointer  focus:outline-none focus:ring-2 focus:ring-blue-500 "
+          >
+            Book an appointment <ArrowRight className="inline " />
+          </button>
         </div>
 
         {/* Footer section */}

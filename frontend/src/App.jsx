@@ -11,11 +11,15 @@ import Appointment from "./pages/Appointment";
 import Navbar from "./components/Navbar";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
+import AuthSync from "./components/AuthSync";
 
 const App = () => {
+   const backendURL = import.meta.env.VITE_BACKEND_URL;
   return (
+    
     <div className="mx-4 sm:mx-[10%]">
       <ToastContainer />
+       <AuthSync backendURL={backendURL} />
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
@@ -27,6 +31,7 @@ const App = () => {
         <Route path="/my-profile" element={<Myprofile />} />
         <Route path="/my-appointments" element={<MyAppointment />} />
         <Route path="/appointment/:name/:docId" element={<Appointment />} />
+        <Route path="/my-profile" element={<Myprofile />} />
 
       </Routes>
     </div>

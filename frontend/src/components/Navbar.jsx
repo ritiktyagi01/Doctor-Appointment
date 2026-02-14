@@ -4,6 +4,8 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { ArrowRight, Menu, X } from "lucide-react";
 import { useClerk, useUser, UserButton } from "@clerk/clerk-react";
 
+
+
 const Navbar = () => {
   const { user } = useUser();
   const { openSignIn, signOut, openUserProfile } = useClerk();
@@ -18,6 +20,7 @@ const Navbar = () => {
     { name: "CONTACT", path: "/contact" },
     
   ];
+  
 
   return (
     <>
@@ -40,7 +43,7 @@ const Navbar = () => {
                 <>
                   <li>{item.name}</li>
                   <hr
-                    className={`h-0.5 w-3/5 bg-yellow transition-all duration-300 ${isActive ? "block" : "hidden"
+                    className={`h-0.5 w-3/5 bg-primary transition-all duration-300 ${isActive ? "block" : "hidden"
                       }`}
                   />
                 </>
@@ -83,7 +86,7 @@ const Navbar = () => {
                   <div className="absolute right-0 mt-2 w-44 bg-white border rounded-md shadow-lg">
                     <p
                       onClick={() => {
-                        openUserProfile();
+                      navigate('/my-profile')
                         setOpen(false);
                       }}
                       className="px-4 py-2 hover:bg-gray-100 cursor-pointer"

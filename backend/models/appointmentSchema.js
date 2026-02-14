@@ -9,6 +9,8 @@ const appointmentSchema = new mongoose.Schema({
     ref: "Doctor",
     required: true
   },
+  userData:{type:Object,required:true},
+  docData:{type:Object,required:true},
   slotDate: {
     type: String,
     required: true
@@ -24,7 +26,10 @@ const appointmentSchema = new mongoose.Schema({
   date: {
     type: Number,
     required: true
-  }
+  },
+  cancelled:{type:Boolean,default:false},
+  payment:{type:Boolean,default:false},
+  isCompleted:{type:Boolean,default:false}
 });
 
 const appointmentModel = mongoose.models.appointment || mongoose.model('appointment',appointmentSchema);

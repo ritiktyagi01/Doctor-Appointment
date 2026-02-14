@@ -47,11 +47,9 @@ const Login = () => {
     }
   };
   return (
-    <div>
-      {/* //<Login form /> */}
-      <form
+ <><form
         onSubmit={onSubmitHandler}
-        className="flex items-center min-h-[80vh]"
+        className="flex items-center  min-h-[80vh]"
       >
         <div
           className="flex flex-col gap-3 m-auto items-start p-8 min-w-75 sm:min-w-85
@@ -116,7 +114,10 @@ const Login = () => {
         </div>
         <hr />
       </form>
-    </div>
+ </>
+     
+      
+    
   );
 };
 

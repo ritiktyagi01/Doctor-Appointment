@@ -14,47 +14,46 @@ const App = () => {
   const { token } = useContext(AdminContext);
 
   return (
-    <>
-      <Navbar />
-      <div className="bg-[#F8F9FD] ">
-        <ToastContainer />
+   <>
+  <Navbar />
+  <div className="bg-[#F8F9FD]">
+    <ToastContainer />
 
-       
+    <div className="flex items-start">
+      {token && <Sidebar />}
 
-        <Routes>
-          {/* PUBLIC ROUTE */}
-          <Route
-            path="/login"
-            element={!token ? <Login /> : <Navigate to="/admin/dashboard" />}
-          />
-          </Routes>
+      <Routes>
+        {/* Public Route */}
+        <Route
+          path="/login"
+          element={!token ? <Login /> : <Navigate to="/admin/dashboard" />}
+        />
 
-          {/* PROTECTED ROUTES */}
-          <div className="bg-[#F8F9FD] flex items-start" >
-             {token && <Sidebar />}
-            <Routes>
+        {/* Protected Routes */}
+        <Route
+          path="/admin/dashboard"
+          element={token ? <Dashboard /> : <Navigate to="/login" />}
+        />
 
-            <Route
-            path="/admin/dashboard"
-            element={token ? <Dashboard /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/all-appointments"
-            element={token ? <AllAppointments /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/add-doctor"
-            element={token ? <AddDoctor /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/doctors-list"
-            element={token ? <DoctorList /> : <Navigate to="/login" />}
-          />
-        </Routes>
-          </div>
-          
-      </div>
-    </>
+        <Route
+          path="/all-appointments"
+          element={token ? <AllAppointments /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/add-doctor"
+          element={token ? <AddDoctor /> : <Navigate to="/login" />}
+        />
+
+        <Route
+          path="/doctors-list"
+          element={token ? <DoctorList /> : <Navigate to="/login" />}
+        />
+      </Routes>
+    </div>
+  </div>
+</>
+
   );
 };
 
