@@ -23,7 +23,7 @@ const AddDoctor = () => {
 
   //
   const { token, backendUrl ,getAllDoctor } = useContext(AdminContext);
-  console.log(token)
+  // console.log(token)
 
   const onSubmitHandler = async (e) => {
     e.preventDefault();
@@ -51,9 +51,9 @@ const AddDoctor = () => {
       );
 
       //print all the data in console
-      formData.forEach((value, key) => {
-        console.log(`${key}:${value}`);
-      });
+      // formData.forEach((value, key) => {
+      //   console.log(`${key}:${value}`);
+      // });
 
       const { data } = await axios.post(
         `${backendUrl}/api/admin/add-doctor`,
@@ -66,7 +66,7 @@ const AddDoctor = () => {
         },
       );
 
-      console.log('data mil gya ')
+      // console.log('data mil gya ')
      
 
       if (data.success) {

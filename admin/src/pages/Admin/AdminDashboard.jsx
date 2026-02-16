@@ -7,7 +7,7 @@ import { useEffect } from "react";
 const AdminDashboard = () => {
   const { token, dashboardData, dashData, cancelAppointment } =
     useContext(AdminContext);
-  console.log(dashData);
+  // console.log(dashData);
   const months = [
     " ",
     "Jan",

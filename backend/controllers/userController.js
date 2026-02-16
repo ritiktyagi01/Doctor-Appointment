@@ -11,7 +11,7 @@ import Razorpay from "razorpay";
 
 const registerUser = async (req, res) => {
   try {
-    const { userId } = req.auth; // From requireAuth()
+    const { userId } = req.auth(); // From requireAuth()
 
     if (!userId) {
       return res.status(401).json({
@@ -111,6 +111,7 @@ const userLogin = async (req, res) => {
 const getUserProfile = async (req, res) => {
   try {
     const { userId } = req.auth();
+    console.log("data",userId)
     if (!userId) {
       return res.status(401).json({ success: false, message: "Unauthorized" });
     }
@@ -175,6 +176,8 @@ const updateUserProfile = async (req, res) => {
 const bookAppointment = async (req, res) => {
   try {
     const { userId } = req.auth();
+    console.log("BOOK userId:", userId);
+
     const { docId, slotDate, slotTime } = req.body;
 
     if (!userId) {
@@ -200,7 +203,7 @@ const bookAppointment = async (req, res) => {
     const docData = await doctorModel.findById(docId);
 
     const appointmentData = {
-      userId,
+       userId,
       userData,
       docData,
       docId,
@@ -224,7 +227,21 @@ const bookAppointment = async (req, res) => {
 const listAppointment = async (req, res) => {
   try {
     const { userId } = req.auth();
-    const appointments = await appointmentModel.find({ userId });
+   console.log("LIST userId:", userId);
+   console.log("Clerk Secret:", process.env.CLERK_SECRET_KEY);
+
+    const appointments = await appointmentModel.find({userId});
+//     console.log(appointments)
+//     console.log(
+//   "Stored userIds:",
+//   appointments.map(a => ({
+//     stored: a.userId,
+//     type: typeof a.userId
+//   }))
+// );
+
+// console.log("Auth userId:", userId, typeof userId);
+    
     res.json({ success: true, message: "list of Appointments", appointments });
   } catch (error) {
     console.error(error);

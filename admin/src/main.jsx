@@ -5,10 +5,18 @@ import { BrowserRouter } from "react-router-dom";
 import AdminContextProvider from "./context/AdminContext.jsx";
 import DoctorContextProvider from "./context/DoctorContext.jsx";
 import AppContextProvider from "./context/AppContext.jsx";
+import { ClerkProvider } from '@clerk/clerk-react'
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Missing Publishable Key')
+}
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
- 
+  <ClerkProvider publishableKey={PUBLISHABLE_KEY}
+    afterSignOutUrl ='/'>
     <AdminContextProvider>
       <DoctorContextProvider>
         <AppContextProvider>
@@ -16,5 +24,9 @@ createRoot(document.getElementById("root")).render(
         </AppContextProvider>
       </DoctorContextProvider>
     </AdminContextProvider>
+    </ClerkProvider>
   </BrowserRouter>,
 );
+
+  
+      

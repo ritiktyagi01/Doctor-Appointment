@@ -37,11 +37,11 @@ const MyAppointment = () => {
   const getAppointmentData = async () => {
     try {
       const token = await getToken();
-      console.log(token);
+      // console.log(token);
 
-      const { data } = await axios.post(
+      const { data } = await axios.get(
         `${backendURL}/api/user/list-appointments`,
-        {},
+
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -49,20 +49,21 @@ const MyAppointment = () => {
         },
       );
 
-      console.log("Full Response:", data);
+      // console.log("Full Response:", data);
+      // console.log(data.appointments);
 
-      if (data.success) {
-        setAppointments(data.appointments.reverse());
-        console.log("Appointments:", data.appointments);
-         toast.success("List of Appointments");
+      if (data.success && Array.isArray(data.appointments)) {
+        setAppointments([...data.appointments].reverse());
 
+        // console.log("Appointments:", data.appointments);
+        toast.success("List of Appointments");
       }
     } catch (error) {
       console.log(error);
       toast.error(error.message);
     }
   };
-const fetchData = async () => {
+  const fetchData = async () => {
     if (!isSignedIn) return;
 
     const token = await getToken();
@@ -98,7 +99,7 @@ const fetchData = async () => {
     }
   };
   // console.log(appointments)
-  
+
   const initPay = (order) => {
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,

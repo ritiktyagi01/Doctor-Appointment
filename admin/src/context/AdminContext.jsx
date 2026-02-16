@@ -125,7 +125,7 @@ const AdminContextProvider = ({ children }) => {
 
       if (data.success) {
         setdashData(data.dashData);
-        console.log("data", data.dashData);
+        // console.log("data", data.dashData);
         toast.success(data.message);
       } else {
         toast.error(data.message);

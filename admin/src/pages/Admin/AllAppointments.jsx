@@ -17,7 +17,7 @@ useEffect(() => {
 
 
 useEffect(() => {
-  console.log("appointment", appointment);
+  // console.log("appointment", appointment);
 }, [appointment]);
 
  
