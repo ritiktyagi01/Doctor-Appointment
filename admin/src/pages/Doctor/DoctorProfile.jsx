@@ -7,6 +7,7 @@ import { useState } from "react";
 const DoctorProfile = () => {
   const { dtoken, doctorProfile, updateProfile, doctorData, setdoctorData } =
     useContext(DoctorContext);
+    console.log(dtoken)
 
   const [isEdit, SetisEdit] = useState(false);
   if (!doctorData) return <p>Loading profile...</p>;
