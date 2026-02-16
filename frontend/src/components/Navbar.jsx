@@ -51,7 +51,7 @@ const Navbar = () => {
             </NavLink>
           ))}
           <div className="">
-            <a target="_blank" href="https://prescriptoiopanel.vercel.app/login"><span className="border border-gray-300 rounded-full h-7 w-28  flex items-center justify-center p-auto text-sm ">Admin Panel</span> </a>
+            <a target="_blank" href="https://prescripto-io-panel.vercel.app/login"><span className="border border-gray-300 rounded-full h-7 w-28  flex items-center justify-center p-auto text-sm ">Admin Panel</span> </a>
           </div>
         
         </ul>
