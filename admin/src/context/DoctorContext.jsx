@@ -151,36 +151,39 @@ const DoctorContextProvider = ({ children }) => {
 
   //api to update profile
   const updateProfile = async () => {
-    try {
-      const payload = {
-        speciality: doctorData.speciality,
-        address: JSON.stringify(doctorData.address),
-        experience: doctorData.experience,
-        about: doctorData.about,
-      };
+  try {
+    const payload = {
+      speciality: doctorData.speciality,
+      address: JSON.stringify(doctorData.address),
+      experience: doctorData.experience,
+      about: doctorData.about,
+      available: doctorData.available, // fix spelling
+    };
 
-      console.log("Sending:", payload);
-      const { data } = await axios.post(
-        `${backendUrl}/api/doctor/update-profile`,
-        {
-          headers: {
-            Authorization: `Bearer ${dtoken}`,
-          },
+    console.log("Sending:", payload);
+
+    const { data } = await axios.post(
+      `${backendUrl}/api/doctor/update-profile`,
+      payload, // ✅ send actual body
+      {
+        headers: {
+          Authorization: `Bearer ${dtoken}`, // ✅ headers in 3rd param
         },
-      );
-      if (data.success) {
-        setdoctorData(data.doctorData);
-        toast.success(data.message);
-        // console.log(data.message);
-        doctorProfile();
-      } else {
-        toast.error(error.message);
       }
-    } catch (error) {
-      console.log(error);
-      toast.error(error.message);
+    );
+
+    if (data.success) {
+      toast.success(data.message);
+      doctorProfile();
     }
-  };
+
+  } catch (error) {
+    console.log(error);
+    toast.error(error.response?.data?.message || error.message);
+  }
+};
+
+
 
   const getPatients = async () => {
   try {
@@ -217,6 +220,7 @@ const DoctorContextProvider = ({ children }) => {
     doctorProfile,
     updateProfile,
     doctorData,
+    setdoctorData,
     patients,
 getPatients,
   };

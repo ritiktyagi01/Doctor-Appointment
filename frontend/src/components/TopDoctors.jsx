@@ -30,9 +30,9 @@ const TopDoctors = () => {
               alt=""
             />
             <div className="p-4">
-              <div className="flex items-center gap-2 text-center text-sm text-green-500 ">
-                <p className="h-2 w-2 bg-green-500 rounded-full "></p>{" "}
-                <p className=""> Avaiable</p>
+              <div className={`flex items-center gap-2 text-center text-sm ${item.available? "text-green-500": "text-gray-500 "}`}>
+                <p className={`h-2 w-2 ${item.available? "bg-green-500": "bg-gray-500" } rounded-full `}></p>{" "}
+                <p className=""> {item.available?'Available' : 'Not Available'}</p>
               </div>
               <p className="text-lg font-semibold">{item.name}</p>
               <p className="text-gray-500">{item.speciality}</p>

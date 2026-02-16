@@ -212,12 +212,12 @@ const MyAppointment = () => {
               <div className="flex flex-col gap-3 w-full md:w-48 md:items-end md:justify-center">
                 {item.payment
                   ? !item.cancelled &&
-                    item.payment && (
+                    item.payment && !item.isCompleted &&(
                       <button className="sm:min-w-48 py-2 px-4  bg-green-600 text-white  border border-green-700 rounded-md font-semibold hover:bg-green transition-all duration-200">
                         Paid
                       </button>
                     )
-                  : !item.cancelled && (
+                  : !item.cancelled &&!item.isCompleted && (
                       <button
                         onClick={() => paymentRazorpay(item._id)}
                         className="w-full border text-sm h-10 rounded-md
@@ -229,7 +229,7 @@ const MyAppointment = () => {
                       </button>
                     )}
 
-                {!item.cancelled && (
+                {!item.cancelled && !item.isCompleted &&(
                   <button
                     onClick={() => cancelAppointment(item._id)}
                     className="w-full border text-sm h-10 rounded-md
@@ -241,14 +241,16 @@ const MyAppointment = () => {
                   </button>
                 )}
 
-                {item.cancelled && (
+                {item.cancelled && !item.isCompleted &&(
                   <button
                     disabled
                     className="sm:min-w-48 text-red-500 border border-red-400 rounded-sm"
                   >
                     Appointment Cancelled
                   </button>
-                )}
+                 
+                )} {item.isCompleted && <button disabled
+                    className="sm:min-w-48 text-green-500 border border-green-400 rounded-sm">Completed</button>}
               </div>
             </div>
           ))}

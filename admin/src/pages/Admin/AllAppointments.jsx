@@ -68,7 +68,8 @@ useEffect(() => {
                {item.amount}
               </p>
               {
-                item.cancelled?<p className="text-sm text-red-400 font-medium">Cancelled</p>:<img onClick={()=>cancelAppointment(item._id)} className="w-10 cursor-pointer" src={assets.cancel_icon} alt=""/>
+                item.cancelled?<p className="text-sm text-red-400 font-medium">Cancelled</p>:
+                item.isCompleted?<p className="text-sm text-green-400 font-medium" > Completed</p>:<img onClick={()=>cancelAppointment(item._id)} className="w-10 cursor-pointer" src={assets.cancel_icon} alt=""/>
               }
 
             </div>

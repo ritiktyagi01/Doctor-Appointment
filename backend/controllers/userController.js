@@ -176,8 +176,6 @@ const updateUserProfile = async (req, res) => {
 const bookAppointment = async (req, res) => {
   try {
     const { userId } = req.auth();
-    console.log("BOOK userId:", userId);
-
     const { docId, slotDate, slotTime } = req.body;
 
     if (!userId) {
@@ -190,6 +188,39 @@ const bookAppointment = async (req, res) => {
     const user = await clerkClient.users.getUser(userId);
     const dbUser = await userModel.findOne({ clerkId: userId });
 
+    const docData = await doctorModel.findById(docId);
+
+    if (!docData) {
+      return res.json({
+        success: false,
+        message: "Doctor not found",
+      });
+    }
+
+    // 🔒 Ensure slots_booked exists
+    let slots_booked = docData.slots_booked || {};
+
+    // 🔒 Create date array if not present
+    if (!slots_booked[slotDate]) {
+      slots_booked[slotDate] = [];
+    }
+
+    // ❌ Prevent double booking
+    if (slots_booked[slotDate].includes(slotTime)) {
+      return res.json({
+        success: false,
+        message: "Slot already booked",
+      });
+    }
+
+    // ✅ Mark slot as booked
+    slots_booked[slotDate].push(slotTime);
+
+    // ✅ Update doctor document
+    await doctorModel.findByIdAndUpdate(docId, {
+      slots_booked,
+    });
+
     const userData = {
       name: `${user.firstName || ""} ${user.lastName || ""}`,
       email: user.emailAddresses[0]?.emailAddress || "",
@@ -199,36 +230,51 @@ const bookAppointment = async (req, res) => {
       gender: dbUser?.gender || "",
       dob: dbUser?.dob || "",
     };
-    console.log(userData);
-    const docData = await doctorModel.findById(docId);
 
     const appointmentData = {
-       userId,
-      userData,
-      docData,
-      docId,
-      slotDate,
-      slotTime,
-      amount: docData.fees,
-      date: Date.now(),
-    };
+  userId,
+  userData,
+  docId,
+  docData: {
+    name: docData.name,
+    image: docData.image,
+    speciality: docData.speciality,
+    fees: docData.fees,
+    address: {
+      line1: docData.address?.line1 || "",
+      line2: docData.address?.line2 || "",
+    },
+  },
+  slotDate,
+  slotTime,
+  amount: docData.fees,
+  date: Date.now(),
+};
 
-    const newAppointment = new appointmentModel(appointmentData);
-    await newAppointment.save();
 
-    res.json({ success: true });
+    await appointmentModel.create(appointmentData);
+
+    res.json({
+      success: true,
+      message: "Appointment booked successfully",
+    });
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
+
 
 //api to get list of appointment
 const listAppointment = async (req, res) => {
   try {
     const { userId } = req.auth();
-   console.log("LIST userId:", userId);
-   console.log("Clerk Secret:", process.env.CLERK_SECRET_KEY);
+  //  console.log("LIST userId:", userId);
+  //  console.log("Clerk Secret:", process.env.CLERK_SECRET_KEY);
 
     const appointments = await appointmentModel.find({userId});
 //     console.log(appointments)

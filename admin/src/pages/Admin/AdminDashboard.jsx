@@ -106,6 +106,11 @@ const AdminDashboard = () => {
                 </div>
                 {item.cancelled ? (
                   <p className="text-sm text-red-400 font-medium">Cancelled</p>
+                ) : item.isCompleted ? (
+                  <p className="text-sm text-green-400 font-medium">
+                    {" "}
+                    Completed
+                  </p>
                 ) : (
                   <img
                     onClick={() => cancelAppointment(item._id)}
